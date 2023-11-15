@@ -1,6 +1,8 @@
 # word_magic
 
-A new Flutter project.
+個人制作
+自作できる単語帳アプリ。
+解説はAIが自動で出してくれるので効率よく勉強できる！
 
 ## Getting Started
 
