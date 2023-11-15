@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_native_splash: ^2.0.5
 
   cupertino_icons: ^1.0.2
 
@@ -16,15 +17,20 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_launcher_icons: ^0.9.2  # 追加
+  flutter_launcher_icons: ^0.9.2   
   flutter_lints: ^2.0.0
 
-flutter_icons:   # 追加
-  android: true  # 追加
-  ios: true      # 追加
-  image_path: "assets/images/heiho.jpg" # 追加
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/heiho.jpg"
   adaptive_icon_background: '#ffffff'
   adaptive_icon_foreground: "assets/images/heiho.jpg"
+
+flutter_native_splash:         
+  image: "assets/images/heiho.jpg"
+  color: "#F8F8F8"
+  fullscreen: true
 
 flutter:
   uses-material-design: true
