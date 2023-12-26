@@ -26,13 +26,13 @@ dev_dependencies:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/title_image.png"
-  adaptive_icon_background: '#ffffff'
-  adaptive_icon_foreground: "assets/title_image.png"
+  image_path: "assets/app_icon.png"
+  # adaptive_icon_background: '#ffffff'
+  # adaptive_icon_foreground: "assets/title_image.png"
 
 flutter_native_splash:         
-  image: "assets/wordmagic_word_result.png"
-  color: "#ffffff"
+  image: "assets/splash.png"
+  color: "5165FF"
   fullscreen: true
 
 flutter:
