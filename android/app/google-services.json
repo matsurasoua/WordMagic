@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "772151560554",
+    "project_id": "wordmagic-d94fb",
+    "storage_bucket": "wordmagic-d94fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772151560554:android:d6b5b9650da6ae61bfbd13",
+        "android_client_info": {
+          "package_name": "com.example.word_magic"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAT-su9uGezCpYRfx-B04NnPp9erKmLciA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
