@@ -204,10 +204,11 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> UserLogin() async {
     try {
       final FirebaseAuth auth = FirebaseAuth.instance;
-      await auth.signInWithEmailAndPassword(
+      final user = await auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      print(user.user?.uid);
       await Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) {
           return HomePage();
@@ -221,8 +222,3 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 }
-/**
-asano@gmail.com
-password
-
- */
