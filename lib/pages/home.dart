@@ -1,10 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:word_magic/pages/card.dart';
 import 'package:word_magic/pages/graph.dart';
-import 'package:word_magic/pages/login.dart';
-import 'package:word_magic/pages/main.dart';
-import 'package:word_magic/pages/signup.dart';
 import 'package:word_magic/setting/setting_color.dart';
 
 class HomePage extends StatefulWidget {
@@ -49,19 +45,19 @@ class _HomePageState extends State<HomePage> {
                 BottomNavigationBarItem(
                   icon: Icon(
                     Icons.home,
-                    size: 30,
                   ),
-                  label: '',
+                  label: 'ホーム',
                 ),
                 // Add other items as needed
                 BottomNavigationBarItem(
                   icon: Icon(Icons.bar_chart_rounded),
-                  label: '',
+                  label: 'グラフ',
                 ),
               ],
               currentIndex: _selectedIndex,
-              selectedItemColor: Color(setting_blue),
+              selectedItemColor: Color(Setting_Color.setting_blue),
               onTap: _onItemTapped,
+              iconSize: 30,
             ),
           ),
         ),

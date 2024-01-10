@@ -25,10 +25,6 @@ class MyApp extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             print('ロード中...');
-            return Center(
-                child: CircularProgressIndicator(
-              value: 2,
-            ));
           }
           // ログイン状態なら
           if (snapshot.hasData) {
