@@ -15,8 +15,15 @@ class CardPage extends StatefulWidget {
 }
 
 class _CardPageState extends State<CardPage> {
+  // 単語帳名
   String card_name = '';
+  // エラーメッセージ
   String errorMessage = '未入力です。';
+  // カウント
+  int count = 0;
+  // editの状態管理
+  bool isEdited = true;
+
   final auth = FirebaseAuth.instance;
   // 現在ログイン中のユーザID
   final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -35,7 +42,7 @@ class _CardPageState extends State<CardPage> {
           int count = snapshot.data!.size;
           if (count > 0) {
             // ドキュメントが１個以上の場合
-            return yesdata(count);
+            return yesdata();
           } else {
             // ドキュメントが０個の場合
             return nodata();
@@ -53,15 +60,13 @@ class _CardPageState extends State<CardPage> {
   }
 
   // データが入っている時
-  Widget yesdata(int count) {
+  Widget yesdata() {
     return FutureBuilder<List>(
         future: db_service.read(uid!),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final cards = snapshot.data!;
-            print(cards[0]);
-            print(cards.length);
-            print(count);
+            print(cards);
             return Scaffold(
               backgroundColor: Color(Setting_Color.setting_background),
               // AppBar
@@ -100,11 +105,17 @@ class _CardPageState extends State<CardPage> {
                   IconButton(
                       // 編集ボタン
                       onPressed: () {
-                        db_service.read(uid!);
+                        setState(() {
+                          // 状態切り替え
+                          isEdited = !isEdited;
+                        });
                       },
                       icon: Icon(
-                        Icons.edit,
-                        color: Color(Setting_Color.setting_gray),
+                        // trueなら編集ボタン、falseならチェックボタン
+                        isEdited ? Icons.edit : Icons.check,
+                        color: isEdited
+                            ? Color(Setting_Color.setting_gray)
+                            : Color(Setting_Color.setting_green),
                         size: 33,
                       )),
                 ],
@@ -124,7 +135,7 @@ class _CardPageState extends State<CardPage> {
                                 fontSize: 20, fontWeight: FontWeight.bold)),
                       ),
                     ),
-                    for (int i = 0; i < count; i++) ...{
+                    for (int i = 0; i < cards.length; i++) ...{
                       Container(
                         child: Stack(
                           children: [
@@ -132,8 +143,8 @@ class _CardPageState extends State<CardPage> {
                               margin:
                                   EdgeInsets.only(top: 30, left: 30, right: 30),
                               child: Text(
-                                i.toString(),
-                                // cards[i],
+                                // i.toString(),
+                                cards[i],
                                 style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -143,7 +154,56 @@ class _CardPageState extends State<CardPage> {
                             Align(
                               alignment: Alignment.centerRight,
                               child: Container(
-                                child: Icon(Icons.navigate_next),
+                                margin: EdgeInsets.only(right: 12),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if (!isEdited) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            insetPadding: EdgeInsets.all(8),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(15))),
+                                            title: Text('削除しますか？'),
+                                            content: Container(
+                                              width: 200,
+                                              child: Text(cards[i] + 'を削除する'),
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                child: Text('OK'),
+                                                onPressed: () {
+                                                  db_service.delete(
+                                                      uid!, cards[i]);
+                                                  // ダイアログを閉じる
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                              TextButton(
+                                                child: Text('キャンセル'),
+                                                onPressed: () {
+                                                  // ダイアログを閉じる
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    }
+                                  },
+                                  child: Icon(
+                                    isEdited
+                                        ? Icons.navigate_next
+                                        : Icons.delete_forever_rounded,
+                                    size: 30,
+                                    color: isEdited
+                                        ? Color(Setting_Color.setting_gray)
+                                        : Color(Setting_Color.setting_red),
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -282,11 +342,10 @@ class _CardPageState extends State<CardPage> {
                                       try {
                                         // 単語帳作成
                                         await db_service.create(
-                                          // ユーザIDと単語帳名
-                                          uid!,
-                                          card_name,
-                                          cards.length,
-                                        );
+                                            // ユーザIDと単語帳名
+                                            uid!,
+                                            card_name,
+                                            cards.length);
                                         Navigator.of(context).pop(HomePage());
                                       } catch (_) {
                                         ScaffoldMessenger.of(context)
@@ -477,12 +536,7 @@ class _CardPageState extends State<CardPage> {
                               try {
                                 // 単語帳作成
                                 db_service.create(uid!, card_name, 0);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) {
-                                    return HomePage();
-                                  }),
-                                );
+                                Navigator.of(context).pop();
                               } catch (_) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(

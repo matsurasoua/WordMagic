@@ -58,6 +58,7 @@ class _LoginPageState extends State<LoginPage> {
                           width: 300,
                           margin: EdgeInsets.only(top: 20),
                           child: TextFormField(
+                            controller: TextEditingController(text: "@"),
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               filled: true,
