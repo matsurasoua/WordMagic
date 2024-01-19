@@ -1,20 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:word_magic/pages/db_service.dart';
-import 'package:word_magic/pages/home.dart';
-import 'package:word_magic/pages/main.dart';
-import 'package:word_magic/pages/signup.dart';
+import 'package:word_magic/pages/cards/cards.dart';
+import 'package:word_magic/pages/home/db_service.dart';
+import 'package:word_magic/pages/home/home.dart';
+import 'package:word_magic/pages/auth/main.dart';
+import 'package:word_magic/pages/auth/signup.dart';
 import 'package:word_magic/setting/setting_color.dart';
 
-class CardPage extends StatefulWidget {
-  const CardPage({super.key});
+class FlashCardPage extends StatefulWidget {
+  const FlashCardPage({super.key});
 
   @override
-  State<CardPage> createState() => _CardPageState();
+  State<FlashCardPage> createState() => _FlashCardPageState();
 }
 
-class _CardPageState extends State<CardPage> {
+class _FlashCardPageState extends State<FlashCardPage> {
   // 単語帳名
   String card_name = '';
   // エラーメッセージ
@@ -28,7 +29,7 @@ class _CardPageState extends State<CardPage> {
   // 現在ログイン中のユーザID
   final uid = FirebaseAuth.instance.currentUser?.uid;
   final db_service = DB_Service();
-
+  // user情報取得したい
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -71,166 +72,221 @@ class _CardPageState extends State<CardPage> {
               backgroundColor: Color(Setting_Color.setting_background),
               // AppBar
               appBar: AppBar(
-                centerTitle: false,
-                title: Image.asset(
-                  'assets/wordmagic_word_result.png',
-                  width: 170,
-                ),
-                actions: [
-                  IconButton(
-                      // 検索ボタン
-                      onPressed: () {
-                        db_service.read(uid!);
-                        // ログアウト処理
-                        auth.signOut().then((_) async {
-                          await Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(builder: (context) {
-                              return MyApp();
-                            }),
-                          );
-                        }).catchError((error) {
-                          // ログアウト失敗
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(error.toString()),
-                            ),
-                          );
-                        });
-                      },
-                      icon: Icon(
-                        Icons.search,
-                        color: Color(Setting_Color.setting_gray),
-                        size: 33,
-                      )),
-                  IconButton(
-                      // 編集ボタン
-                      onPressed: () {
-                        setState(() {
-                          // 状態切り替え
-                          isEdited = !isEdited;
-                        });
-                      },
-                      icon: Icon(
-                        // trueなら編集ボタン、falseならチェックボタン
-                        isEdited ? Icons.edit : Icons.check,
-                        color: isEdited
-                            ? Color(Setting_Color.setting_gray)
-                            : Color(Setting_Color.setting_green),
-                        size: 33,
-                      )),
-                ],
-                backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-              ),
-              body: SingleChildScrollView(
-                child: Column(
+                  centerTitle: true,
+                  title: Image.asset(
+                    'assets/wordmagic_word_result.png',
+                    width: 170,
+                  ),
+                  actions: [
+                    IconButton(
+                        // 検索ボタン
+                        onPressed: () {
+                          db_service.read(uid!);
+                          // ログアウト処理
+                          auth.signOut().then((_) async {
+                            await Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (context) {
+                                return MyApp();
+                              }),
+                            );
+                          }).catchError((error) {
+                            // ログアウト失敗
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(error.toString()),
+                              ),
+                            );
+                          });
+                        },
+                        icon: Icon(
+                          Icons.search,
+                          color: Color(Setting_Color.setting_gray),
+                          size: 33,
+                        )),
+                    IconButton(
+                        // 編集ボタン
+                        onPressed: () {
+                          setState(() {
+                            // 状態切り替え
+                            isEdited = !isEdited;
+                          });
+                        },
+                        icon: Icon(
+                          // trueなら編集ボタン、falseならチェックボタン
+                          isEdited ? Icons.edit : Icons.check,
+                          color: isEdited
+                              ? Color(Setting_Color.setting_gray)
+                              : Color(Setting_Color.setting_green),
+                          size: 33,
+                        )),
+                  ],
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                  iconTheme: IconThemeData(
+                      color: Color(Setting_Color.setting_gray), size: 30)),
+              drawer: Drawer(
+                backgroundColor: Color(setting_background),
+                child: ListView(
+                  padding: EdgeInsets.zero,
                   children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Container(
-                        margin: EdgeInsets.only(top: 20, left: 30),
-                        child: Text('単語帳一覧',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                      ),
-                    ),
-                    for (int i = 0; i < cards.length; i++) ...{
-                      Container(
-                        child: Stack(
-                          children: [
-                            Container(
-                              margin:
-                                  EdgeInsets.only(top: 30, left: 30, right: 30),
-                              child: Text(
-                                // i.toString(),
-                                cards[i],
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(Setting_Color.setting_gray)),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Container(
-                                margin: EdgeInsets.only(right: 12),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    if (!isEdited) {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            insetPadding: EdgeInsets.all(8),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(15))),
-                                            title: Text('削除しますか？'),
-                                            content: Container(
-                                              width: 200,
-                                              child: Text(cards[i] + 'を削除する'),
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                child: Text('OK'),
-                                                onPressed: () {
-                                                  db_service.delete(
-                                                      uid!, cards[i]);
-                                                  // ダイアログを閉じる
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                              TextButton(
-                                                child: Text('キャンセル'),
-                                                onPressed: () {
-                                                  // ダイアログを閉じる
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    }
-                                  },
-                                  child: Icon(
-                                    isEdited
-                                        ? Icons.navigate_next
-                                        : Icons.delete_forever_rounded,
-                                    size: 30,
-                                    color: isEdited
-                                        ? Color(Setting_Color.setting_gray)
-                                        : Color(Setting_Color.setting_red),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        margin: EdgeInsets.only(top: 30),
-                        width: 350,
-                        height: 90,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                spreadRadius: 2,
-                                blurRadius: 5,
-                                offset: Offset(0, 3), // 影の位置（x, y）
-                              ),
-                            ],
-                            border: Border.all(
-                                color: Color(setting_blue), width: 2.0)),
-                      ),
-                    },
-                    // 下の余白
-                    Container(
-                      margin: EdgeInsets.only(top: 75),
+                    DrawerHeader(
+                        decoration: BoxDecoration(color: Color(setting_blue)),
+                        child: Image.asset('assets/splash.png')),
+                    Column(
+                      children: [Container(child: Text('aa'))],
                     )
                   ],
+                ),
+              ),
+              body: RefreshIndicator(
+                onRefresh: () async {
+                  await Future.delayed(Duration(seconds: 1));
+                  // setState(() {});
+                },
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Container(
+                          margin: EdgeInsets.only(top: 20, left: 30),
+                          child: Text('単語帳一覧',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                      for (int i = 0; i < cards.length; i++) ...{
+                        // カードが押された時の処理
+                        GestureDetector(
+                          onTap: () {
+                            // 画面遷移処理
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => CardsPage(
+                                          title: cards[i],
+                                          uid: uid!,
+                                        )));
+                          },
+                          child: Container(
+                            child: Stack(
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(
+                                      top: 30, left: 35, right: 30),
+                                  child: Text(
+                                    cards[i],
+                                    style: TextStyle(
+                                        fontSize: 21,
+                                        fontWeight: FontWeight.bold,
+                                        color:
+                                            Color(Setting_Color.setting_gray)),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 12),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        if (!isEdited) {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                insetPadding: EdgeInsets.all(8),
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                15))),
+                                                title: Center(
+                                                  child: Text('本当に削除しますか？',
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      )),
+                                                ),
+                                                content: Container(
+                                                  width: 250,
+                                                  height: 50,
+                                                  child: Center(
+                                                      child: Text(
+                                                          cards[i] + 'を削除する')),
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    child: Text(
+                                                      '削除',
+                                                      style: TextStyle(
+                                                          color: Color(
+                                                              Setting_Color
+                                                                  .setting_red)),
+                                                    ),
+                                                    onPressed: () {
+                                                      db_service.delete(
+                                                          uid!, cards[i]);
+                                                      // ダイアログを閉じる
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                  TextButton(
+                                                    child: Text(
+                                                      'キャンセル',
+                                                    ),
+                                                    onPressed: () {
+                                                      // ダイアログを閉じる
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        }
+                                      },
+                                      child: Icon(
+                                        isEdited
+                                            ? Icons.navigate_next
+                                            : Icons.delete_forever_rounded,
+                                        size: 30,
+                                        color: isEdited
+                                            ? Color(Setting_Color.setting_gray)
+                                            : Color(Setting_Color.setting_red),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            margin: EdgeInsets.only(top: 30),
+                            width: 350,
+                            height: 90,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    spreadRadius: 1.3,
+                                    blurRadius: 1,
+                                    offset: Offset(0, 1.5), // 影の位置（x, y）
+                                  ),
+                                ],
+                                border: Border.all(
+                                    color: Color(setting_blue), width: 2.0)),
+                          ),
+                        ),
+                      },
+                      // 下の余白
+                      Container(
+                        margin: EdgeInsets.only(top: 75),
+                      )
+                    ],
+                  ),
                 ),
               ),
               floatingActionButton: FloatingActionButton.extended(
@@ -263,7 +319,7 @@ class _CardPageState extends State<CardPage> {
                                         Navigator.pop(context);
                                       },
                                       icon: Icon(
-                                        Icons.cancel_outlined,
+                                        Icons.close,
                                         size: 30,
                                         color:
                                             Color(Setting_Color.setting_gray),
@@ -284,6 +340,7 @@ class _CardPageState extends State<CardPage> {
                                 width: 300,
                                 margin: EdgeInsets.only(top: 30),
                                 child: TextFormField(
+                                  maxLength: 12,
                                   decoration: InputDecoration(
                                     filled: true,
                                     fillColor: Colors.white,
@@ -378,26 +435,56 @@ class _CardPageState extends State<CardPage> {
       backgroundColor: Color(Setting_Color.setting_background),
       // AppBar
       appBar: AppBar(
-        centerTitle: false,
-        title: Image.asset(
-          'assets/wordmagic_word_result.png',
-          width: 170,
+          centerTitle: true,
+          title: Image.asset(
+            'assets/wordmagic_word_result.png',
+            width: 170,
+          ),
+          // actions: [
+          //   IconButton(
+          //       // 単語カード作成ボタン
+          //       onPressed: () {
+          //         db_service.read(uid!);
+          //         // ログアウト処理
+          //         auth.signOut().then((_) async {
+          //           await Navigator.of(context).pushReplacement(
+          //             MaterialPageRoute(builder: (context) {
+          //               return MyApp();
+          //             }),
+          //           );
+          //         }).catchError((error) {
+          //           // ログアウト失敗
+          //           ScaffoldMessenger.of(context).showSnackBar(
+          //             SnackBar(
+          //               content: Text(error.toString()),
+          //             ),
+          //           );
+          //         });
+          //       },
+          //       icon: Icon(
+          //         Icons.add_circle_outline,
+          //         color: Colors.indigoAccent,
+          //         size: 30,
+          //       )),
+          // ],
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          iconTheme: IconThemeData(
+              color: Color(Setting_Color.setting_gray), size: 30)),
+      drawer: Drawer(
+        backgroundColor: Color(setting_background),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+                decoration: BoxDecoration(color: Color(setting_blue)),
+                child: Image.asset('assets/splash.png')),
+            Column(
+              children: [Container(child: Text('aa'))],
+            )
+          ],
         ),
-        actions: [
-          IconButton(
-              // 単語カード作成ボタン
-              onPressed: () {
-                db_service.read(uid!);
-              },
-              icon: Icon(
-                Icons.add_circle_outline,
-                color: Colors.indigoAccent,
-                size: 30,
-              )),
-        ],
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10))),
       ),
       body: Center(
         child: Column(

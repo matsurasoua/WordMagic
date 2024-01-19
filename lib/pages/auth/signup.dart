@@ -1,23 +1,29 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:word_magic/pages/home.dart';
-import 'package:word_magic/pages/signup.dart';
-import '../setting/setting_color.dart';
+import 'package:word_magic/pages/home/home.dart';
+import '../../setting/setting_color.dart';
 
-class LoginPage extends StatefulWidget {
+Setting_Color setting_color = new Setting_Color();
+var setting_blue = Setting_Color.setting_blue;
+var setting_background = Setting_Color.setting_background;
+
+class SignupPage extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _SignupPageState createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignupPageState extends State<SignupPage> {
   // メッセージ表示用
   String infoText = '';
   // 入力したメールアドレス・パスワード
   String email = '';
   String password = '';
-  String errorMessage = '';
+  String name = '';
   bool _isObscure = true;
+  String errorMessage = '正しく入力してください';
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final db = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -49,17 +55,49 @@ class _LoginPageState extends State<LoginPage> {
                         Container(
                           margin: EdgeInsets.only(top: 50, bottom: 50),
                           child: Text(
-                            'Login',
+                            'SignUp',
                             style: TextStyle(
                                 fontSize: 40, fontWeight: FontWeight.bold),
                           ),
                         ),
                         Container(
                           width: 300,
+                          margin: EdgeInsets.only(top: 27),
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  color: Color(setting_blue),
+                                  width: 2.0,
+                                ),
+                              ),
+                              labelStyle: TextStyle(
+                                fontSize: 15,
+                                color: Color(Setting_Color.setting_gray),
+                              ),
+                              labelText: 'ユーザ名',
+                              floatingLabelStyle: TextStyle(
+                                  fontSize: 20, color: Color(setting_blue)),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16),
+                                borderSide: BorderSide(
+                                  color: Color(setting_blue),
+                                  width: 1.0,
+                                ),
+                              ),
+                            ),
+                            onChanged: (String value) {
+                              name = value;
+                            },
+                          ),
+                        ),
+                        Container(
+                          width: 300,
                           margin: EdgeInsets.only(top: 20),
                           child: TextFormField(
-                            controller: TextEditingController(text: "@"),
-                            keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Colors.white,
@@ -115,13 +153,15 @@ class _LoginPageState extends State<LoginPage> {
                                 icon: Icon(_isObscure
                                     ? Icons.visibility_off
                                     : Icons.visibility),
+                                color: Color(_isObscure
+                                    ? Setting_Color.setting_gray
+                                    : setting_blue),
                                 // アイコンがタップされたら現在と反対の状態をセットする
                                 onPressed: () {
                                   setState(() {
                                     _isObscure = !_isObscure;
                                   });
                                 },
-                                color: Color(Setting_Color.setting_gray),
                               ),
                               floatingLabelStyle: TextStyle(
                                   fontSize: 20, color: Color(setting_blue)),
@@ -154,11 +194,33 @@ class _LoginPageState extends State<LoginPage> {
                                 backgroundColor: Color(setting_blue),
                               ),
                               child: Text(
-                                'ログイン',
+                                '登録',
                                 style: TextStyle(fontSize: 20),
                               ),
                               onPressed: () async {
-                                UserLogin();
+                                try {
+                                  await auth.createUserWithEmailAndPassword(
+                                    email: email,
+                                    password: password,
+                                  );
+                                  final uid =
+                                      FirebaseAuth.instance.currentUser?.uid;
+                                  await db.collection('users').doc(uid).set({
+                                    'name': name,
+                                    'mail': email,
+                                  });
+                                  await Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(builder: (context) {
+                                      return HomePage();
+                                    }),
+                                  );
+                                  // エラーメッセージ
+                                } catch (_) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                    content: Text(errorMessage),
+                                  ));
+                                }
                               },
                             ),
                           ),
@@ -179,14 +241,11 @@ class _LoginPageState extends State<LoginPage> {
                                     Color.fromARGB(255, 255, 255, 255),
                                 side: BorderSide(color: Color(setting_blue))),
                             child: Text(
-                              '新規登録',
+                              '戻る',
                               style: TextStyle(fontSize: 20),
                             ),
                             onPressed: () async {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return SignupPage();
-                              }));
+                              Navigator.pop(context);
                             },
                           ),
                         ),
@@ -200,26 +259,5 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-  }
-
-  Future<void> UserLogin() async {
-    try {
-      final FirebaseAuth auth = FirebaseAuth.instance;
-      final user = await auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      print(user.user?.uid);
-      await Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) {
-          return HomePage();
-        }),
-      );
-    } on FirebaseAuthException catch (_) {
-      errorMessage = 'メールアドレスかパスワードが正しくありません';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(errorMessage),
-      ));
-    }
   }
 }

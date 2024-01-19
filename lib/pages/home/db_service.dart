@@ -3,6 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DB_Service {
   final db = FirebaseFirestore.instance;
 
+  Future<List> readuser(String uid) async {
+    final doc = await db.collection('users').doc(uid).get();
+    print('read関数が動いています');
+    final userinfo = doc.data()?['email'];
+    return userinfo;
+  }
+
   Future<void> create(String uid, String card_name, int length) async {
     length += 1;
     await db
@@ -21,6 +28,7 @@ class DB_Service {
         .collection('cards')
         .orderBy('card_id', descending: true)
         .get();
+    print('read関数が動いています');
     final documents = doc.docs.map((d) => d.id).toList();
     return documents;
   }

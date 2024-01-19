@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:word_magic/pages/home.dart';
-import 'package:word_magic/pages/login.dart';
+import 'package:word_magic/pages/home/home.dart';
+import 'package:word_magic/pages/auth/login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
