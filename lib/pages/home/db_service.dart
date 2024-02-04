@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DB_Service {
   final db = FirebaseFirestore.instance;
 
-  Future<List> readuser(String uid) async {
+  Future<String> readuser(String uid) async {
     final doc = await db.collection('users').doc(uid).get();
     print('read関数が動いています');
     final userinfo = doc.data()?['email'];

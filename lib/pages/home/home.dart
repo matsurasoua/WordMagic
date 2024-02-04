@@ -48,7 +48,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                   label: 'ホーム',
                 ),
-                // Add other items as needed
                 BottomNavigationBarItem(
                   icon: Icon(Icons.bar_chart_rounded),
                   label: 'グラフ',

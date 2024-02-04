@@ -24,8 +24,8 @@ class _FlashCardPageState extends State<FlashCardPage> {
   int count = 0;
   // editの状態管理
   bool isEdited = true;
-
   final auth = FirebaseAuth.instance;
+  final firestore = FirebaseFirestore.instance;
   // 現在ログイン中のユーザID
   final uid = FirebaseAuth.instance.currentUser?.uid;
   final db_service = DB_Service();
@@ -51,6 +51,7 @@ class _FlashCardPageState extends State<FlashCardPage> {
         } else {
           // データの取得中の表示ロード画面
           return Scaffold(
+            backgroundColor: Color(setting_background),
             body: Center(
               child: CircularProgressIndicator(),
             ),
@@ -81,22 +82,7 @@ class _FlashCardPageState extends State<FlashCardPage> {
                     IconButton(
                         // 検索ボタン
                         onPressed: () {
-                          db_service.read(uid!);
                           // ログアウト処理
-                          auth.signOut().then((_) async {
-                            await Navigator.of(context).pushReplacement(
-                              MaterialPageRoute(builder: (context) {
-                                return MyApp();
-                              }),
-                            );
-                          }).catchError((error) {
-                            // ログアウト失敗
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(error.toString()),
-                              ),
-                            );
-                          });
                         },
                         icon: Icon(
                           Icons.search,
@@ -133,8 +119,42 @@ class _FlashCardPageState extends State<FlashCardPage> {
                     DrawerHeader(
                         decoration: BoxDecoration(color: Color(setting_blue)),
                         child: Image.asset('assets/splash.png')),
-                    Column(
-                      children: [Container(child: Text('aa'))],
+                    Container(
+                      child: ListTile(
+                        title: Text(
+                          'ecc@ecc.ac.jp',
+                          style: TextStyle(color: Colors.black, fontSize: 20),
+                        ),
+                        // subtitle: Text('ecc@ecc.ac.jp'),
+                        leading: const Icon(Icons.mail),
+                        onTap: () {},
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 400),
+                      child: ListTile(
+                        title: Text('Logout'),
+                        leading: Icon(
+                          Icons.logout,
+                          color: Color(Setting_Color.setting_red),
+                        ),
+                        onTap: () {
+                          auth.signOut().then((_) async {
+                            await Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (context) {
+                                return MyApp();
+                              }),
+                            );
+                          }).catchError((error) {
+                            // ログアウト失敗
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(error.toString()),
+                              ),
+                            );
+                          });
+                        },
+                      ),
                     )
                   ],
                 ),
@@ -142,7 +162,7 @@ class _FlashCardPageState extends State<FlashCardPage> {
               body: RefreshIndicator(
                 onRefresh: () async {
                   await Future.delayed(Duration(seconds: 1));
-                  // setState(() {});
+                  setState(() {});
                 },
                 child: SingleChildScrollView(
                   child: Column(
@@ -162,12 +182,15 @@ class _FlashCardPageState extends State<FlashCardPage> {
                           onTap: () {
                             // 画面遷移処理
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => CardsPage(
-                                          title: cards[i],
-                                          uid: uid!,
-                                        )));
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CardsPage(
+                                  title: cards[i],
+                                  uid: uid!,
+                                ),
+                                fullscreenDialog: true,
+                              ),
+                            );
                           },
                           child: Container(
                             child: Stack(
@@ -178,10 +201,10 @@ class _FlashCardPageState extends State<FlashCardPage> {
                                   child: Text(
                                     cards[i],
                                     style: TextStyle(
-                                        fontSize: 21,
-                                        fontWeight: FontWeight.bold,
-                                        color:
-                                            Color(Setting_Color.setting_gray)),
+                                      fontSize: 21,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(Setting_Color.setting_gray),
+                                    ),
                                   ),
                                 ),
                                 Align(
@@ -202,45 +225,68 @@ class _FlashCardPageState extends State<FlashCardPage> {
                                                             Radius.circular(
                                                                 15))),
                                                 title: Center(
-                                                  child: Text('本当に削除しますか？',
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      )),
+                                                  child: Text(
+                                                    '本当に削除しますか？',
+                                                    style: TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
                                                 ),
                                                 content: Container(
                                                   width: 250,
                                                   height: 50,
                                                   child: Center(
-                                                      child: Text(
-                                                          cards[i] + 'を削除する')),
+                                                    child: Text(
+                                                      cards[i] + 'を削除する',
+                                                      // style: TextStyle(
+                                                      //     fontWeight:
+                                                      //         FontWeight.bold),
+                                                    ),
+                                                  ),
                                                 ),
                                                 actions: [
-                                                  TextButton(
-                                                    child: Text(
-                                                      '削除',
-                                                      style: TextStyle(
-                                                          color: Color(
-                                                              Setting_Color
-                                                                  .setting_red)),
+                                                  Container(
+                                                    margin: EdgeInsets.only(
+                                                        right: 37),
+                                                    child: TextButton(
+                                                      child: Text(
+                                                        '削除',
+                                                        style: TextStyle(
+                                                            fontSize: 18,
+                                                            color: Color(
+                                                                Setting_Color
+                                                                    .setting_red),
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                      onPressed: () {
+                                                        db_service.delete(
+                                                            uid!, cards[i]);
+                                                        // ダイアログを閉じる
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
                                                     ),
-                                                    onPressed: () {
-                                                      db_service.delete(
-                                                          uid!, cards[i]);
-                                                      // ダイアログを閉じる
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
                                                   ),
-                                                  TextButton(
-                                                    child: Text(
-                                                      'キャンセル',
+                                                  Container(
+                                                    margin: EdgeInsets.only(
+                                                        right: 20),
+                                                    child: TextButton(
+                                                      child: Text(
+                                                        'キャンセル',
+                                                        style: TextStyle(
+                                                          fontSize: 18,
+                                                        ),
+                                                      ),
+                                                      onPressed: () {
+                                                        // ダイアログを閉じる
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
                                                     ),
-                                                    onPressed: () {
-                                                      // ダイアログを閉じる
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
                                                   ),
                                                 ],
                                               );
@@ -440,33 +486,6 @@ class _FlashCardPageState extends State<FlashCardPage> {
             'assets/wordmagic_word_result.png',
             width: 170,
           ),
-          // actions: [
-          //   IconButton(
-          //       // 単語カード作成ボタン
-          //       onPressed: () {
-          //         db_service.read(uid!);
-          //         // ログアウト処理
-          //         auth.signOut().then((_) async {
-          //           await Navigator.of(context).pushReplacement(
-          //             MaterialPageRoute(builder: (context) {
-          //               return MyApp();
-          //             }),
-          //           );
-          //         }).catchError((error) {
-          //           // ログアウト失敗
-          //           ScaffoldMessenger.of(context).showSnackBar(
-          //             SnackBar(
-          //               content: Text(error.toString()),
-          //             ),
-          //           );
-          //         });
-          //       },
-          //       icon: Icon(
-          //         Icons.add_circle_outline,
-          //         color: Colors.indigoAccent,
-          //         size: 30,
-          //       )),
-          // ],
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -481,8 +500,37 @@ class _FlashCardPageState extends State<FlashCardPage> {
                 decoration: BoxDecoration(color: Color(setting_blue)),
                 child: Image.asset('assets/splash.png')),
             Column(
-              children: [Container(child: Text('aa'))],
-            )
+              children: [
+                Container(
+                  child: Text('aa'),
+                ),
+                IconButton(
+                    // 単語カード作成ボタン
+                    onPressed: () {
+                      db_service.read(uid!);
+                      // ログアウト処理
+                      auth.signOut().then((_) async {
+                        await Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) {
+                            return MyApp();
+                          }),
+                        );
+                      }).catchError((error) {
+                        // ログアウト失敗
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(error.toString()),
+                          ),
+                        );
+                      });
+                    },
+                    icon: Icon(
+                      Icons.add_circle_outline,
+                      color: Colors.indigoAccent,
+                      size: 30,
+                    )),
+              ],
+            ),
           ],
         ),
       ),
@@ -528,14 +576,15 @@ class _FlashCardPageState extends State<FlashCardPage> {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         onPressed: () {
           showModalBottomSheet(
-              context: context,
-              backgroundColor: Color(Setting_Color.setting_background),
-              isScrollControlled: true, //trueにしないと、Containerのheightが反映されない
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-              ),
-              builder: (BuildContext context) {
-                return Container(
+            context: context,
+            backgroundColor: Color(Setting_Color.setting_background),
+            isScrollControlled: true, //trueにしないと、Containerのheightが反映されない
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            builder: (BuildContext context) {
+              return Scaffold(
+                body: Container(
                   height: MediaQuery.of(context).size.height * 0.65,
                   child: Column(
                     children: [
@@ -558,11 +607,14 @@ class _FlashCardPageState extends State<FlashCardPage> {
                       // 新しい単語帳を作成テキスト
                       Container(
                         margin: EdgeInsets.only(top: 30),
-                        child: Text('新しい単語帳を作成',
-                            style: TextStyle(
-                                color: Color(Setting_Color.setting_gray),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 27)),
+                        child: Text(
+                          '新しい単語帳を作成',
+                          style: TextStyle(
+                            color: Color(Setting_Color.setting_gray),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 27,
+                          ),
+                        ),
                       ),
                       Container(
                         width: 300,
@@ -620,16 +672,16 @@ class _FlashCardPageState extends State<FlashCardPage> {
                               style: TextStyle(fontSize: 20),
                             ),
                             onPressed: () async {
-                              try {
-                                // 単語帳作成
-                                db_service.create(uid!, card_name, 0);
-                                Navigator.of(context).pop();
-                              } catch (_) {
+                              if (card_name == '') {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(errorMessage),
                                   ),
                                 );
+                                // 単語帳作成
+                              } else {
+                                db_service.create(uid!, card_name, 0);
+                                Navigator.of(context).pop();
                               }
                             },
                           ),
@@ -637,8 +689,10 @@ class _FlashCardPageState extends State<FlashCardPage> {
                       ),
                     ],
                   ),
-                );
-              });
+                ),
+              );
+            },
+          );
         },
       ),
     );

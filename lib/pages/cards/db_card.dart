@@ -5,6 +5,12 @@ class DB_Card {
   Future<void> create(String front_word, String back_word, String comment_word,
       String uid, String title, int length) async {
     length += 1;
+    print(front_word);
+    print(back_word);
+    print(comment_word);
+    print(uid);
+    print(title);
+    print(length);
 
     await db
         .collection('users')

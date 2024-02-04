@@ -18,6 +18,9 @@ dependencies:
   flip_card: ^0.7.0
   carousel_slider: ^4.2.1
   http: ^0.13.3
+  fl_chart: ^0.60.0
+  slide_countdown: ^1.5.0
+  cupertino_timer: ^1.0.2
 
 dev_dependencies:
   flutter_test:

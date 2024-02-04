@@ -16,7 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   // 入力したメールアドレス・パスワード
   String email = '';
   String password = '';
-  String errorMessage = '';
+  String errorMessage = 'メールアドレスかパスワードが正しくありません';
   bool _isObscure = true;
 
   @override
@@ -58,7 +58,8 @@ class _LoginPageState extends State<LoginPage> {
                           width: 300,
                           margin: EdgeInsets.only(top: 20),
                           child: TextFormField(
-                            controller: TextEditingController(text: "@"),
+                            controller:
+                                TextEditingController(text: "stuby@gmail"),
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               filled: true,
@@ -218,10 +219,11 @@ class _LoginPageState extends State<LoginPage> {
         }),
       );
     } on FirebaseAuthException catch (_) {
-      errorMessage = 'メールアドレスかパスワードが正しくありません';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(errorMessage),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+        ),
+      );
     }
   }
 }
