@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:word_magic/pages/card.dart';
-import 'package:word_magic/pages/graph.dart';
+import 'package:word_magic/pages/home/flashcard.dart';
+import 'package:word_magic/pages/home/graph.dart';
 import 'package:word_magic/setting/setting_color.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,7 +12,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   List<Widget> _widgetOptions = <Widget>[
-    CardPage(),
+    FlashCardPage(),
     GraphPage(),
   ];
 
@@ -48,7 +48,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                   label: 'ホーム',
                 ),
-                // Add other items as needed
                 BottomNavigationBarItem(
                   icon: Icon(Icons.bar_chart_rounded),
                   label: 'グラフ',

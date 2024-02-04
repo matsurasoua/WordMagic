@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:word_magic/pages/home.dart';
-import 'package:word_magic/pages/signup.dart';
-import '../setting/setting_color.dart';
+import 'package:word_magic/pages/home/home.dart';
+import 'package:word_magic/pages/auth/signup.dart';
+import '../../setting/setting_color.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -16,7 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   // 入力したメールアドレス・パスワード
   String email = '';
   String password = '';
-  String errorMessage = '';
+  String errorMessage = 'メールアドレスかパスワードが正しくありません';
   bool _isObscure = true;
 
   @override
@@ -58,6 +58,8 @@ class _LoginPageState extends State<LoginPage> {
                           width: 300,
                           margin: EdgeInsets.only(top: 20),
                           child: TextFormField(
+                            controller:
+                                TextEditingController(text: "stuby@gmail"),
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               filled: true,
@@ -114,13 +116,15 @@ class _LoginPageState extends State<LoginPage> {
                                 icon: Icon(_isObscure
                                     ? Icons.visibility_off
                                     : Icons.visibility),
+                                color: Color(_isObscure
+                                    ? Setting_Color.setting_gray
+                                    : setting_blue),
                                 // アイコンがタップされたら現在と反対の状態をセットする
                                 onPressed: () {
                                   setState(() {
                                     _isObscure = !_isObscure;
                                   });
                                 },
-                                color: Color(Setting_Color.setting_gray),
                               ),
                               floatingLabelStyle: TextStyle(
                                   fontSize: 20, color: Color(setting_blue)),
@@ -215,10 +219,11 @@ class _LoginPageState extends State<LoginPage> {
         }),
       );
     } on FirebaseAuthException catch (_) {
-      errorMessage = 'メールアドレスかパスワードが正しくありません';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(errorMessage),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+        ),
+      );
     }
   }
 }
