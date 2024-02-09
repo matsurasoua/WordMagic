@@ -60,40 +60,40 @@ class _SignupPageState extends State<SignupPage> {
                                 fontSize: 40, fontWeight: FontWeight.bold),
                           ),
                         ),
-                        Container(
-                          width: 300,
-                          margin: EdgeInsets.only(top: 27),
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: Color(setting_blue),
-                                  width: 2.0,
-                                ),
-                              ),
-                              labelStyle: TextStyle(
-                                fontSize: 15,
-                                color: Color(Setting_Color.setting_gray),
-                              ),
-                              labelText: 'ユーザ名',
-                              floatingLabelStyle: TextStyle(
-                                  fontSize: 20, color: Color(setting_blue)),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: Color(setting_blue),
-                                  width: 1.0,
-                                ),
-                              ),
-                            ),
-                            onChanged: (String value) {
-                              name = value;
-                            },
-                          ),
-                        ),
+                        // Container(
+                        //   width: 300,
+                        //   margin: EdgeInsets.only(top: 27),
+                        //   child: TextFormField(
+                        //     decoration: InputDecoration(
+                        //       filled: true,
+                        //       fillColor: Colors.white,
+                        //       focusedBorder: OutlineInputBorder(
+                        //         borderRadius: BorderRadius.circular(16),
+                        //         borderSide: BorderSide(
+                        //           color: Color(setting_blue),
+                        //           width: 2.0,
+                        //         ),
+                        //       ),
+                        //       labelStyle: TextStyle(
+                        //         fontSize: 15,
+                        //         color: Color(Setting_Color.setting_gray),
+                        //       ),
+                        //       labelText: 'ユーザ名',
+                        //       floatingLabelStyle: TextStyle(
+                        //           fontSize: 20, color: Color(setting_blue)),
+                        //       enabledBorder: OutlineInputBorder(
+                        //         borderRadius: BorderRadius.circular(16),
+                        //         borderSide: BorderSide(
+                        //           color: Color(setting_blue),
+                        //           width: 1.0,
+                        //         ),
+                        //       ),
+                        //     ),
+                        //     onChanged: (String value) {
+                        //       name = value;
+                        //     },
+                        //   ),
+                        // ),
                         Container(
                           width: 300,
                           margin: EdgeInsets.only(top: 20),

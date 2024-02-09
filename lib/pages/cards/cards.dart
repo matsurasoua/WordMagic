@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:slide_countdown/slide_countdown.dart';
+import 'package:word_magic/pages/auth/main.dart';
 import 'package:word_magic/pages/cards/card_api.dart';
+import 'package:word_magic/pages/cards/cards_edit.dart';
 import 'package:word_magic/pages/cards/create_card.dart';
 import 'package:word_magic/pages/cards/db_card.dart';
+import 'package:word_magic/pages/home/home.dart';
 import 'package:word_magic/setting/setting_color.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -24,6 +27,7 @@ class _CardsPageState extends State<CardsPage> {
   final db_card = DB_Card();
   final api = card_api();
   bool _isLongPressed = false;
+  bool _isEdit = true;
   int num = 0;
 
   @override
@@ -91,19 +95,30 @@ class _CardsPageState extends State<CardsPage> {
                   Setting_Color.setting_gray,
                 ),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MyApp(),
+                      fullscreenDialog: true,
+                    ),
+                  );
                 },
               ),
               actions: [
                 Container(
                   child: IconButton(
                     onPressed: () async {
-                      print('編集ボタン押下');
+                      setState(() {
+                        _isEdit = !_isEdit;
+                        print(_isEdit);
+                      });
                     },
                     icon: Icon(
-                      Icons.edit,
-                      color: Color(Setting_Color.setting_gray),
-                      size: 25,
+                      _isEdit ? Icons.edit : Icons.check,
+                      color: _isEdit
+                          ? Color(Setting_Color.setting_gray)
+                          : Color(Setting_Color.setting_green),
+                      size: 28,
                     ),
                   ),
                 ),
@@ -121,19 +136,131 @@ class _CardsPageState extends State<CardsPage> {
             ),
             body: Stack(
               children: [
-                Container(
-                  margin: EdgeInsets.only(top: 240),
-                  child: CarouselSlider(
-                    items: [
-                      for (int i = 0; i < cards.length; i++) ...{
-                        Container(
-                          margin: EdgeInsets.only(
-                              left: 10, right: 10, bottom: 10, top: 15),
-                          child: FlipCard(
-                            fill: Fill.fillBack,
-                            direction: FlipDirection.HORIZONTAL,
-                            // 表面
-                            front: Container(
+                if (_isEdit) ...{
+                  Container(
+                    margin: EdgeInsets.only(top: 240),
+                    child: CarouselSlider(
+                      items: [
+                        for (int i = 0; i < cards.length; i++) ...{
+                          Container(
+                            margin: EdgeInsets.only(
+                                left: 10, right: 10, bottom: 10, top: 15),
+                            child: FlipCard(
+                              fill: Fill.fillBack,
+                              direction: FlipDirection.HORIZONTAL,
+                              // 表面
+                              front: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      spreadRadius: 1.3,
+                                      blurRadius: 1,
+                                      offset: Offset(0, 1.5), // 影の位置（x, y）
+                                    ),
+                                  ],
+                                  border: Border.all(
+                                      color: Color(Setting_Color.setting_blue),
+                                      width: 1.0),
+                                ),
+                                child: Container(
+                                  margin: EdgeInsets.all(15),
+                                  child: Center(
+                                      child: Text(
+                                    cards[i]['front_word'],
+                                    style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold),
+                                  )),
+                                ),
+                              ),
+                              // 裏面
+                              back: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      spreadRadius: 1.3,
+                                      blurRadius: 1,
+                                      offset: Offset(0, 1.5), // 影の位置（x, y）
+                                    ),
+                                  ],
+                                  border: Border.all(
+                                      color: Colors.black, width: 1.0),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.all(20),
+                                      child: Center(
+                                        child: Text(
+                                          cards[i]['back_word'],
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.topRight,
+                                      child: Container(
+                                        margin: EdgeInsets.only(right: 5),
+                                        child: GestureDetector(
+                                          onTapDown: (_) {
+                                            setState(() {
+                                              _isLongPressed = true;
+                                              print(_isLongPressed);
+                                              num = i;
+                                              print(num);
+                                            });
+                                          },
+                                          onTapUp: (_) {
+                                            setState(() {
+                                              _isLongPressed = false;
+                                              print(_isLongPressed);
+                                            });
+                                          },
+                                          child: Icon(
+                                            _isLongPressed
+                                                ? Icons.lightbulb_circle
+                                                : Icons
+                                                    .lightbulb_circle_outlined,
+                                            size: 45,
+                                            color: Color(
+                                              Setting_Color.setting_blue,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        },
+                      ],
+                      options: CarouselOptions(
+                        height: 200, //高さ
+                        initialPage: 0, //最初に表示されるページ
+                        autoPlay: false, //自動でスライドしてくれるか
+                        viewportFraction: 0.91, //各カードの表示される範囲の割合
+                        enableInfiniteScroll: false, //最後のカードから最初のカードへの遷移
+                      ),
+                    ),
+                  ),
+                  if (_isLongPressed) ...{
+                    if (items[num] != '') ...{
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(top: 100),
+                              width: 300,
+                              height: 100,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(10),
@@ -150,18 +277,24 @@ class _CardsPageState extends State<CardsPage> {
                                     width: 1.0),
                               ),
                               child: Container(
-                                margin: EdgeInsets.all(15),
+                                margin: EdgeInsets.all(20),
                                 child: Center(
-                                    child: Text(
-                                  cards[i]['front_word'],
-                                  style: TextStyle(
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.bold),
-                                )),
+                                  child: Text(items[num]),
+                                ),
                               ),
                             ),
-                            // 裏面
-                            back: Container(
+                          ],
+                        ),
+                      ),
+                    } else ...{
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(top: 100),
+                              width: 300,
+                              height: 100,
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(10),
@@ -173,135 +306,188 @@ class _CardsPageState extends State<CardsPage> {
                                     offset: Offset(0, 1.5), // 影の位置（x, y）
                                   ),
                                 ],
-                                border:
-                                    Border.all(color: Colors.black, width: 1.0),
+                                border: Border.all(
+                                    color: Color(Setting_Color.setting_red),
+                                    width: 1.0),
                               ),
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    margin: EdgeInsets.all(20),
-                                    child: Center(
-                                      child: Text(
-                                        cards[i]['back_word'],
-                                        style: TextStyle(fontSize: 20),
-                                      ),
+                              child: Center(
+                                child: Text(
+                                  'コメントがありません',
+                                  style: TextStyle(
+                                      color: Color(Setting_Color.setting_red)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    },
+                  }
+                } else ...{
+                  Container(
+                    margin: EdgeInsets.only(top: 240),
+                    child: CarouselSlider(
+                      items: [
+                        for (int i = 0; i < cards.length; i++) ...{
+                          Container(
+                            margin: EdgeInsets.only(
+                                left: 10, right: 10, bottom: 10, top: 15),
+                            child: FlipCard(
+                              fill: Fill.fillBack,
+                              direction: FlipDirection.HORIZONTAL,
+                              // 表面
+                              front: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      spreadRadius: 1.3,
+                                      blurRadius: 1,
+                                      offset: Offset(0, 1.5), // 影の位置（x, y）
                                     ),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.topRight,
-                                    child: Container(
-                                      margin: EdgeInsets.only(right: 5),
-                                      child: GestureDetector(
-                                        onTapDown: (_) {
-                                          setState(() {
-                                            _isLongPressed = true;
-                                            print(_isLongPressed);
-                                            num = i;
-                                            print(num);
-                                          });
-                                        },
-                                        onTapUp: (_) {
-                                          setState(() {
-                                            _isLongPressed = false;
-                                            print(_isLongPressed);
-                                          });
-                                        },
-                                        child: Icon(
-                                          _isLongPressed
-                                              ? Icons.lightbulb_circle
-                                              : Icons.lightbulb_circle_outlined,
-                                          size: 45,
-                                          color: Color(
-                                            Setting_Color.setting_blue,
+                                  ],
+                                  border: Border.all(
+                                      color: Color(Setting_Color.setting_green),
+                                      width: 1.0),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.all(15),
+                                      child: Center(
+                                          child: Text(
+                                        cards[i]['front_word'],
+                                        style: TextStyle(
+                                            fontSize: 30,
+                                            fontWeight: FontWeight.bold),
+                                      )),
+                                    ),
+                                    Container(
+                                      margin:
+                                          EdgeInsets.only(top: 10, right: 10),
+                                      child: Align(
+                                        alignment: Alignment.topRight,
+                                        child: Container(
+                                          margin: EdgeInsets.only(right: 5),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      CardEditPage(
+                                                    front_word: cards[i]
+                                                        ['front_word'],
+                                                    back_word: cards[i]
+                                                        ['back_word'],
+                                                    comment_word: cards[i]
+                                                        ['comment_word'],
+                                                    i: i,
+                                                    uid: widget.uid,
+                                                    title: widget.title,
+                                                  ),
+                                                  fullscreenDialog: true,
+                                                ),
+                                              );
+                                            },
+                                            child: Icon(
+                                              Icons.edit,
+                                              size: 35,
+                                              color: Color(
+                                                Setting_Color.setting_green,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              // 裏面
+                              back: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      spreadRadius: 1.3,
+                                      blurRadius: 1,
+                                      offset: Offset(0, 1.5), // 影の位置（x, y）
                                     ),
-                                  )
-                                ],
+                                  ],
+                                  border: Border.all(
+                                      color: Colors.black, width: 1.0),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.all(20),
+                                      child: Center(
+                                        child: Text(
+                                          cards[i]['back_word'],
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      margin:
+                                          EdgeInsets.only(top: 10, right: 10),
+                                      child: Align(
+                                        alignment: Alignment.topRight,
+                                        child: Container(
+                                          margin: EdgeInsets.only(right: 5),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      CardEditPage(
+                                                    front_word: cards[i]
+                                                        ['front_word'],
+                                                    back_word: cards[i]
+                                                        ['back_word'],
+                                                    comment_word: cards[i]
+                                                        ['comment_word'],
+                                                    i: i,
+                                                    uid: widget.uid,
+                                                    title: widget.title,
+                                                  ),
+                                                  fullscreenDialog: true,
+                                                ),
+                                              );
+                                            },
+                                            child: Icon(
+                                              Icons.edit,
+                                              size: 35,
+                                              color: Color(
+                                                Setting_Color.setting_green,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      },
-                    ],
-                    options: CarouselOptions(
-                      height: 200, //高さ
-                      initialPage: 0, //最初に表示されるページ
-                      autoPlay: false, //自動でスライドしてくれるか
-                      viewportFraction: 0.91, //各カードの表示される範囲の割合
-                      enableInfiniteScroll: false, //最後のカードから最初のカードへの遷移
+                        },
+                      ],
+                      options: CarouselOptions(
+                        height: 200, //高さ
+                        initialPage: 0, //最初に表示されるページ
+                        autoPlay: false, //自動でスライドしてくれるか
+                        viewportFraction: 0.91, //各カードの表示される範囲の割合
+                        enableInfiniteScroll: false, //最後のカードから最初のカードへの遷移
+                      ),
                     ),
                   ),
-                ),
-                if (_isLongPressed) ...{
-                  if (items[num] != '') ...{
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(top: 100),
-                            width: 300,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  spreadRadius: 1.3,
-                                  blurRadius: 1,
-                                  offset: Offset(0, 1.5), // 影の位置（x, y）
-                                ),
-                              ],
-                              border: Border.all(
-                                  color: Color(Setting_Color.setting_blue),
-                                  width: 1.0),
-                            ),
-                            child: Center(
-                              child: Text(items[num]),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  } else ...{
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(top: 100),
-                            width: 300,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
-                                  spreadRadius: 1.3,
-                                  blurRadius: 1,
-                                  offset: Offset(0, 1.5), // 影の位置（x, y）
-                                ),
-                              ],
-                              border: Border.all(
-                                  color: Color(Setting_Color.setting_blue),
-                                  width: 1.0),
-                            ),
-                            child: Center(
-                              child: Text(
-                                'コメントがありません',
-                                style: TextStyle(
-                                    color: Color(Setting_Color.setting_red)),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  },
                 }
               ],
             ),
@@ -342,7 +528,13 @@ class _CardsPageState extends State<CardsPage> {
       appBar: AppBar(
         leading: GestureDetector(
           onTap: () {
-            Navigator.of(context).pop();
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomePage(),
+                fullscreenDialog: true,
+              ),
+            );
           },
           child: Icon(
             Icons.arrow_back_ios_new,
@@ -381,7 +573,7 @@ class _CardsPageState extends State<CardsPage> {
             ),
             Container(
               margin: EdgeInsets.only(top: 10),
-              child: Text('右上の＋ボタンを押して追加してみましょう！',
+              child: Text('右下のボタンを押して追加してみましょう！',
                   style: TextStyle(
                       color: Color(Setting_Color.setting_gray), fontSize: 15)),
             )

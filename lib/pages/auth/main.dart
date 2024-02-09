@@ -8,7 +8,6 @@ import 'package:word_magic/pages/auth/login.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  // await Future.delayed(Duration(seconds: 2));
   FlutterNativeSplash.remove();
   runApp(const MyApp());
 }

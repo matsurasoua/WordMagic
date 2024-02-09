@@ -33,7 +33,18 @@ class DB_Service {
     return documents;
   }
 
-  Future<void> update() async {}
+  Future<void> update(String uid, String card_name, String update_card) async {
+    final docRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('cards')
+        .doc(card_name);
+    await docRef.update({
+      'id': update_card,
+    });
+    print('update関数が動いています');
+  }
+
   Future<void> delete(String uid, String card) async {
     await db
         .collection('users')
@@ -41,5 +52,10 @@ class DB_Service {
         .collection('cards')
         .doc(card)
         .delete();
+  }
+
+  Future<void> createglaph(String uid, String value) async {
+    await db.collection('users').doc(uid).set({'goaltime': value});
+    print('create関数が動いています');
   }
 }

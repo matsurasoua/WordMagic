@@ -41,6 +41,37 @@ class DB_Card {
     return documents;
   }
 
-  Future<void> update() async {}
-  Future<void> delete() async {}
+  Future<void> update(String front_word, String back_word, String comment_word,
+      String uid, String title, int i) async {
+    i += 1;
+    print(front_word);
+    print(i.toString());
+    print(uid);
+    print(title);
+    final docRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('cards')
+        .doc(title)
+        .collection('datas')
+        .doc(i.toString());
+    await docRef.update({
+      'front_word': front_word,
+      'back_word': back_word,
+      'comment_word': comment_word,
+    });
+    print('update関数が動いています');
+  }
+
+  Future<void> delete(String uid, String card, int i) async {
+    i += 1;
+    await db
+        .collection('users')
+        .doc(uid)
+        .collection('cards')
+        .doc(card)
+        .collection('datas')
+        .doc(i.toString())
+        .delete();
+  }
 }
