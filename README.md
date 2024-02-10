@@ -1,18 +1,10 @@
 # word_magic
 
 個人制作
-自作できる単語帳アプリ。（未完成）
+自作できる単語帳アプリ。
 解説はAIが自動で出してくれるので効率よく勉強できる！
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 概要
+単語帳は、作成に時間と労力がいるため、苦労されている方も多いのではないでしょうか。
+このアプリの特徴は、単語帳の作成が簡単なことです。単語帳の表面を入力するだけで、裏面にAIが解説を自動入力し、単語の意味や使い方を調べる手間が省けて、効率よく作成し学習に集中することが出来ます。
+このアプリは、単語帳のデメリットを解決した、単語を覚えたい方におすすめのアプリです.
