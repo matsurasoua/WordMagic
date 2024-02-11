@@ -11,9 +11,3 @@
 
 ## 実行動画
 https://github.com/matsurasoua/WordMagic/assets/125346986/bb18a941-9715-4be5-9b37-f82c76bc654a
-
-<div align="center">
-  <video width="320" height="240" controls>
-    <source src="https://github.com/matsurasoua/WordMagic/assets/125346986/bb18a941-9715-4be5-9b37-f82c76bc654a" type="video/mov">
-  </video>
-</div>
