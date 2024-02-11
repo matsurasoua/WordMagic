@@ -10,3 +10,4 @@
 このアプリは、単語帳のデメリットを解決した、単語を覚えたい方におすすめのアプリです.
 
 <img src='https://github.com/matsurasoua/WordMagic/assets/125346986/066c5067-f960-432f-a57f-d9b33525ee9d' width='300px'>
+https://github.com/matsurasoua/WordMagic/assets/125346986/85258461-d6d6-45a0-97e7-98ef6fe948c2
