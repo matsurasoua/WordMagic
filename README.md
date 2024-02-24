@@ -8,6 +8,12 @@
 単語帳は、作成に時間と労力がいるため、苦労されている方も多いのではないでしょうか。
 このアプリの特徴は、単語帳の作成が簡単なことです。単語帳の表面を入力するだけで、裏面にAIが解説を自動入力し、単語の意味や使い方を調べる手間が省けて、効率よく作成し学習に集中することが出来ます。
 このアプリは、単語帳のデメリットを解決した、単語を覚えたい方におすすめのアプリです.
+言語：Dart、Python
+フレームワーク：Flutter
+クラウドサービス：AWS(EC2)、Firebase(Authentication、Firestore)
+ツール：Figma、GitHub、SourceTree
+期間：３ヶ月ほど
+人数：１人
 
 ## 実行動画
 https://github.com/matsurasoua/WordMagic/assets/125346986/bb18a941-9715-4be5-9b37-f82c76bc654a
