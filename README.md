@@ -17,4 +17,4 @@
 
 ## 実行動画
 https://github.com/matsurasoua/WordMagic/assets/125346986/bb18a941-9715-4be5-9b37-f82c76bc654a
-<img src='https://github.com/matsurasoua/Stuby/assets/125346986/a25f16b5-0158-46a1-8cf0-4cf9ef9bde5e' width = "40%"></img>
+<img src='https://github.com/matsurasoua/Stuby/assets/125346986/a25f16b5-0158-46a1-8cf0-4cf9ef9bde5e' width = "30%"></img>
