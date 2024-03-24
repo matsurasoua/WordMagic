@@ -17,3 +17,5 @@
 
 ## 実行動画
 https://github.com/matsurasoua/WordMagic/assets/125346986/bb18a941-9715-4be5-9b37-f82c76bc654a
+![Simulator Screenshot - iPhone 15 - 2024-03-24 at 17 57 45](https://github.com/matsurasoua/Stuby/assets/125346986/a25f16b5-0158-46a1-8cf0-4cf9ef9bde5e)
+
